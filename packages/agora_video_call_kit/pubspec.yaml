@@ -1,0 +1,28 @@
+name: agora_video_call_kit
+description: A reusable Flutter package for integrating Agora Video Calling SDK with a clean, customizable API.
+version: 1.0.0
+homepage: https://github.com/rocksolid911/agora_vc_integrator
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Agora Video Calling SDK for Flutter
+  agora_rtc_engine: ^6.3.2
+
+  # Permissions handler
+  permission_handler: ^11.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.4.8
+
+flutter:
+  # No assets currently, but can add default avatars here

@@ -1,0 +1,26 @@
+name: example_app
+description: Example Flutter app demonstrating Agora Video Call Kit integration
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Local package dependency
+  agora_video_call_kit:
+    path: ../packages/agora_video_call_kit
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
