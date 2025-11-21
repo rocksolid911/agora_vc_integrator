@@ -10,11 +10,11 @@ class LocalVideoView extends StatelessWidget {
   final String? userName;
 
   const LocalVideoView({
-    Key? key,
+    super.key,
     required this.engine,
     required this.isVideoEnabled,
     this.userName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,11 +117,11 @@ class RemoteVideoView extends StatelessWidget {
   final RtcConnection? connection;
 
   const RemoteVideoView({
-    Key? key,
+    super.key,
     required this.engine,
     required this.user,
     this.connection,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

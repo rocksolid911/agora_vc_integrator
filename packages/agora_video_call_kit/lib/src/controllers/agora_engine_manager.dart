@@ -20,7 +20,7 @@ class AgoraEngineManager {
   /// Callbacks
   final VoidCallback? onJoinSuccess;
   final Function(int uid)? onUserJoined;
-  final Function(int uid, UserOfflineReasonType reason)? onUserOffline;
+  final Function(int uid, UserOfflineReasonType reason)? onRemoteUserOffline;
   final Function(RtcConnection connection, RtcStats stats)? onLeaveChannel;
   final Function(ErrorCodeType err, String msg)? onError;
   final Function(RtcConnection connection, int elapsed)? onJoinChannelSuccess;
@@ -34,7 +34,7 @@ class AgoraEngineManager {
     required this.config,
     this.onJoinSuccess,
     this.onUserJoined,
-    this.onUserOffline,
+    this.onRemoteUserOffline,
     this.onLeaveChannel,
     this.onError,
     this.onJoinChannelSuccess,
@@ -91,7 +91,7 @@ class AgoraEngineManager {
             'Remote user $remoteUid left: $reason',
             name: 'AgoraEngineManager',
           );
-          onUserOffline?.call(remoteUid, reason);
+          onRemoteUserOffline?.call(remoteUid, reason);
         },
         onLeaveChannel: (RtcConnection connection, RtcStats stats) {
           dev.log(

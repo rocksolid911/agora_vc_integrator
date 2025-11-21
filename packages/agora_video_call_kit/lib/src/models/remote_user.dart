@@ -15,13 +15,13 @@ class RemoteUser {
   /// Timestamp when user joined
   final DateTime joinedAt;
 
-  const RemoteUser({
+   RemoteUser({
     required this.uid,
     this.hasVideo = true,
     this.hasAudio = true,
     this.name,
     DateTime? joinedAt,
-  }) : joinedAt = joinedAt ?? const _DefaultDateTime();
+  }) : joinedAt = joinedAt ??  _DefaultDateTime();
 
   /// Copy with method for updating user state
   RemoteUser copyWith({
@@ -57,5 +57,5 @@ class RemoteUser {
 
 /// Helper class for default DateTime in const constructor
 class _DefaultDateTime extends DateTime {
-  const _DefaultDateTime() : super.fromMillisecondsSinceEpoch(0);
+   _DefaultDateTime() : super.fromMillisecondsSinceEpoch(0);
 }

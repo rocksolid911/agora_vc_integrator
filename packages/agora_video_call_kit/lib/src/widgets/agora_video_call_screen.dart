@@ -56,14 +56,14 @@ class AgoraVideoCallScreen extends StatefulWidget {
   final Color? backgroundColor;
 
   const AgoraVideoCallScreen({
-    Key? key,
+    super.key,
     required this.config,
     this.tokenProvider,
     this.onCallEnded,
     this.controlsBuilder,
     this.showDebugInfo = false,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   State<AgoraVideoCallScreen> createState() => _AgoraVideoCallScreenState();
