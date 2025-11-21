@@ -56,7 +56,7 @@ class AgoraVideoCallController extends ChangeNotifier {
       config: config,
       onJoinSuccess: _handleJoinSuccess,
       onUserJoined: _handleUserJoined,
-      onUserOffline: _handleUserOffline,
+      onRemoteUserOffline: _handleRemoteUserOffline,
       onError: _handleError,
       onConnectionStateChanged: _handleConnectionStateChanged,
       onRemoteAudioStateChanged: _handleRemoteAudioStateChanged,
@@ -189,7 +189,7 @@ class AgoraVideoCallController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _handleUserOffline(int uid, UserOfflineReasonType reason) {
+  void _handleRemoteUserOffline(int uid, UserOfflineReasonType reason) {
     dev.log('User $uid left: $reason', name: 'AgoraVideoCallController');
     _remoteUsers.remove(uid);
     notifyListeners();
@@ -247,6 +247,7 @@ class AgoraVideoCallController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   void _updateState(AgoraCallState newState) {
     if (_callState != newState) {

@@ -37,7 +37,7 @@
 ///   ),
 /// );
 /// ```
-library agora_video_call_kit;
+library agora_flutter;
 
 // Models
 export 'src/models/agora_call_config.dart';
