@@ -17,6 +17,12 @@ dependencies:
   # Permissions handler
   permission_handler: ^11.3.0
 
+  # HTTP client for recording API calls
+  http: ^1.2.0
+
+  # Mixpanel analytics (optional - can be excluded if not using Mixpanel)
+  mixpanel_flutter: ^2.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

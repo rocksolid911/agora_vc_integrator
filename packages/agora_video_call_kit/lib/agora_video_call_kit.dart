@@ -55,6 +55,18 @@ export 'src/widgets/agora_video_call_screen.dart';
 export 'src/widgets/call_control_button.dart';
 export 'src/widgets/video_view.dart';
 
+// Analytics
+export 'src/analytics/analytics_provider.dart';
+export 'src/analytics/mixpanel_analytics_provider.dart';
+
+// Monitoring
+export 'src/monitoring/agora_logger.dart';
+export 'src/monitoring/call_metrics.dart';
+
+// Recording
+export 'src/recording/recording_config.dart';
+export 'src/recording/recording_manager.dart';
+
 // Re-export commonly used Agora types for convenience
 export 'package:agora_rtc_engine/agora_rtc_engine.dart'
     show

@@ -159,21 +159,11 @@ class AgoraVideoCallController extends ChangeNotifier {
   Future<void> endCall() async {
     try {
       _updateState(AgoraCallState.leaving);
-
-      // Stop recording if active
-      if (_recordingManager?.isRecording == true) {
-        await stopRecording();
-      }
-
       await _engineManager.leaveChannel();
       _remoteUsers.clear();
       _updateState(AgoraCallState.left);
-
-      // Track successful call end
-      _metricsTracker?.trackCallEnd(wasSuccessful: true);
-    } catch (e, stackTrace) {
-      _logger.error('Error ending call', e, stackTrace);
-      _metricsTracker?.trackCallEnd(wasSuccessful: false);
+    } catch (e) {
+      dev.log('Error ending call', name: 'AgoraVideoCallController', error: e);
       _setError('Failed to end call: $e');
     }
   }
@@ -184,10 +174,9 @@ class AgoraVideoCallController extends ChangeNotifier {
       final newMuteState = !_isAudioMuted;
       await _engineManager.muteLocalAudio(newMuteState);
       _isAudioMuted = newMuteState;
-      _metricsTracker?.trackMediaToggle('audio', !newMuteState);
       notifyListeners();
-    } catch (e, stackTrace) {
-      _logger.error('Error toggling audio', e, stackTrace);
+    } catch (e) {
+      dev.log('Error toggling audio', name: 'AgoraVideoCallController', error: e);
     }
   }
 
@@ -197,10 +186,9 @@ class AgoraVideoCallController extends ChangeNotifier {
       final newVideoState = !_isVideoEnabled;
       await _engineManager.enableLocalVideo(newVideoState);
       _isVideoEnabled = newVideoState;
-      _metricsTracker?.trackMediaToggle('video', newVideoState);
       notifyListeners();
-    } catch (e, stackTrace) {
-      _logger.error('Error toggling video', e, stackTrace);
+    } catch (e) {
+      dev.log('Error toggling video', name: 'AgoraVideoCallController', error: e);
     }
   }
 
@@ -208,9 +196,8 @@ class AgoraVideoCallController extends ChangeNotifier {
   Future<void> switchCamera() async {
     try {
       await _engineManager.switchCamera();
-      _metricsTracker?.trackCameraSwitch();
-    } catch (e, stackTrace) {
-      _logger.error('Error switching camera', e, stackTrace);
+    } catch (e) {
+      dev.log('Error switching camera', name: 'AgoraVideoCallController', error: e);
     }
   }
 
@@ -221,66 +208,19 @@ class AgoraVideoCallController extends ChangeNotifier {
       await _engineManager.setEnableSpeakerphone(newSpeakerState);
       _isSpeakerEnabled = newSpeakerState;
       notifyListeners();
-    } catch (e, stackTrace) {
-      _logger.error('Error toggling speaker', e, stackTrace);
+    } catch (e) {
+      dev.log('Error toggling speaker', name: 'AgoraVideoCallController', error: e);
     }
-  }
-
-  /// Start recording the call
-  Future<bool> startRecording() async {
-    if (_recordingManager == null) {
-      _logger.warning('Recording manager not configured');
-      return false;
-    }
-
-    if (_localUid == null) {
-      _logger.error('Cannot start recording: local UID not available');
-      return false;
-    }
-
-    _logger.info('Starting call recording');
-    final success = await _recordingManager!.startRecording(
-      channelName: config.channelName,
-      uid: _localUid!,
-    );
-
-    if (success) {
-      analyticsProvider?.trackEvent('recording_started', {
-        'channel_name': config.channelName,
-        'recording_id': _recordingManager!.currentRecordingId,
-      });
-      notifyListeners();
-    }
-
-    return success;
-  }
-
-  /// Stop recording the call
-  Future<void> stopRecording() async {
-    if (_recordingManager == null || !_recordingManager!.isRecording) {
-      return;
-    }
-
-    _logger.info('Stopping call recording');
-    await _recordingManager!.stopRecording();
-
-    analyticsProvider?.trackEvent('recording_stopped', {
-      'channel_name': config.channelName,
-    });
-
-    notifyListeners();
   }
 
   // Event handlers
   void _handleJoinSuccess() {
-    _logger.info('Join success');
-    _metricsTracker?.trackJoinSuccess();
+    dev.log('Join success', name: 'AgoraVideoCallController');
     _updateState(AgoraCallState.joined);
   }
 
   void _handleUserJoined(int uid) {
-    _logger.info('User $uid joined');
-    _metricsTracker?.trackUserJoined(uid);
+    dev.log('User $uid joined', name: 'AgoraVideoCallController');
     _remoteUsers[uid] = RemoteUser(
       uid: uid,
       hasVideo: true,
@@ -291,15 +231,13 @@ class AgoraVideoCallController extends ChangeNotifier {
   }
 
   void _handleUserOffline(int uid, UserOfflineReasonType reason) {
-    _logger.info('User $uid left: $reason');
-    _metricsTracker?.trackUserLeft(uid, reason);
+    dev.log('User $uid left: $reason', name: 'AgoraVideoCallController');
     _remoteUsers.remove(uid);
     notifyListeners();
   }
 
   void _handleError(ErrorCodeType err, String msg) {
-    _logger.error('Error: $err - $msg');
-    _metricsTracker?.trackError(err.name, msg);
+    dev.log('Error: $err - $msg', name: 'AgoraVideoCallController');
     _setError('Call error: $msg (${err.name})');
   }
 
@@ -307,16 +245,17 @@ class AgoraVideoCallController extends ChangeNotifier {
     ConnectionStateType state,
     ConnectionChangedReasonType reason,
   ) {
-    _logger.info('Connection state: $state, reason: $reason');
+    dev.log(
+      'Connection state: $state, reason: $reason',
+      name: 'AgoraVideoCallController',
+    );
 
     if (state == ConnectionStateType.connectionStateConnecting ||
         state == ConnectionStateType.connectionStateReconnecting) {
-      _metricsTracker?.trackReconnection();
       _updateState(AgoraCallState.reconnecting);
     } else if (state == ConnectionStateType.connectionStateConnected) {
       _updateState(AgoraCallState.joined);
     } else if (state == ConnectionStateType.connectionStateFailed) {
-      _metricsTracker?.trackError('connection_failed', reason.name);
       _setError('Connection failed: ${reason.name}');
     } else if (state == ConnectionStateType.connectionStateDisconnected) {
       if (_callState != AgoraCallState.leaving &&
@@ -327,7 +266,7 @@ class AgoraVideoCallController extends ChangeNotifier {
   }
 
   void _handleRemoteAudioStateChanged(int uid, bool muted) {
-    _logger.debug('User $uid audio ${muted ? "muted" : "unmuted"}');
+    dev.log('User $uid audio ${muted ? "muted" : "unmuted"}', name: 'AgoraVideoCallController');
     final user = _remoteUsers[uid];
     if (user != null) {
       _remoteUsers[uid] = user.copyWith(hasAudio: !muted);
@@ -340,7 +279,7 @@ class AgoraVideoCallController extends ChangeNotifier {
     RemoteVideoState state,
     RemoteVideoStateReason reason,
   ) {
-    _logger.debug('User $uid video state: $state');
+    dev.log('User $uid video state: $state', name: 'AgoraVideoCallController');
     final user = _remoteUsers[uid];
     if (user != null) {
       final hasVideo = state == RemoteVideoState.remoteVideoStateDecoding ||
@@ -365,9 +304,7 @@ class AgoraVideoCallController extends ChangeNotifier {
 
   @override
   void dispose() {
-    _recordingManager?.dispose();
     _engineManager.dispose();
     super.dispose();
   }
 }
-

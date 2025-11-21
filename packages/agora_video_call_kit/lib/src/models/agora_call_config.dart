@@ -1,5 +1,7 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
+import '../monitoring/agora_logger.dart';
+
 /// Configuration class for Agora video calls
 ///
 /// This class contains all the necessary configuration parameters
@@ -37,6 +39,12 @@ class AgoraCallConfig {
   /// Optional custom user name for display
   final String? userName;
 
+  /// Enable metrics tracking and analytics (default: false)
+  final bool enableMetrics;
+
+  /// Log level for debugging (default: error only)
+  final LogLevel logLevel;
+
   const AgoraCallConfig({
     required this.appId,
     required this.channelName,
@@ -48,6 +56,8 @@ class AgoraCallConfig {
     this.videoEncoderConfig,
     this.channelProfile = ChannelProfileType.channelProfileCommunication,
     this.userName,
+    this.enableMetrics = false,
+    this.logLevel = LogLevel.error,
   });
 
   /// Convenience constructor for quick host setup
@@ -100,6 +110,8 @@ class AgoraCallConfig {
     VideoEncoderConfiguration? videoEncoderConfig,
     ChannelProfileType? channelProfile,
     String? userName,
+    bool? enableMetrics,
+    LogLevel? logLevel,
   }) {
     return AgoraCallConfig(
       appId: appId ?? this.appId,
@@ -112,6 +124,8 @@ class AgoraCallConfig {
       videoEncoderConfig: videoEncoderConfig ?? this.videoEncoderConfig,
       channelProfile: channelProfile ?? this.channelProfile,
       userName: userName ?? this.userName,
+      enableMetrics: enableMetrics ?? this.enableMetrics,
+      logLevel: logLevel ?? this.logLevel,
     );
   }
 
